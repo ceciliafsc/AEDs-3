@@ -34,7 +34,7 @@ public class Main {
                          f_temp.fromByteArray(ba);
                     }
                     else{
-
+                         dis.skipBytes(len);//pular se registro tiver sido excluido
                     }
                     
                }     
