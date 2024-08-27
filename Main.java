@@ -1,10 +1,4 @@
-import java.io.FileOutputStream; 
-import java.io.DataOutputStream;
-import java.io.FileInputStream; 
-import java.io.DataInputStream;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,7 +6,7 @@ public class Main {
 
      public static Filme ler(Filme f){
 
-          FileInputStream arq2;
+          FileInputStream arq;
           DataInputStream dis; 
 
           byte[] ba;
@@ -20,8 +14,8 @@ public class Main {
           Filme f_temp = new Filme();
 
            try{
-               arq2 =  new FileInputStream("filmes.db");
-               dis = new DataInputStream(arq2);
+               arq =  new FileInputStream("filmes.db");
+               dis = new DataInputStream(arq);
                
                while (dis.available() > 0) { //ler ate eof
 
@@ -49,6 +43,12 @@ public class Main {
                System.out.println(e.getMessage());
           } 
           return null; //retornar nulo se não encotrar id
+     }
+
+     public static boolean remover(int id){    
+
+          
+          return false;
      }
 
      public static void main(String[] args) {
@@ -99,7 +99,7 @@ public class Main {
 
                // Convertendo para array de bytes
                ba = filme.toByteArray();
-               // Escrevendo lápide (0 para registro válido)
+               //  lápide 0 para registro válido
                dos.writeByte(0); 
                // Escrevendo o tamanho do registro e o registro
                dos.writeInt(ba.length); 
@@ -111,3 +111,4 @@ public class Main {
         }  
      }
 }
+
