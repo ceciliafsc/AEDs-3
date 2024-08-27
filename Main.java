@@ -19,41 +19,43 @@ public class Main {
           int len;
           Filme f_temp = new Filme();
 
-           //ler arq
            try{
                arq2 =  new FileInputStream("filmes.db");
-               dis = new DataInputStream(arq2);//ler arquivo
+               dis = new DataInputStream(arq2);
                
-               while (!f_temp.name.equals(f.name)) {
-                    byte lapide = dis.readByte();
-                    len = dis.readInt(); //Tamano do registro em bytes
+               while (dis.available() > 0) { //ler ate eof
 
-                    if(lapide == 0){
+                    byte lapide = dis.readByte();
+                    len = dis.readInt(); //Tamanho do registro
+
+                    //ler se nao for um registro excluido
+                    if(lapide != 1){
                          ba = new byte[len];
                          dis.read(ba);                        
-                         f_temp.fromByteArray(ba);
+                         f_temp.fromByteArray(ba); 
+                         if (f_temp.id == f.id) {
+                              return f_temp;
+                         }
                     }
-                    else{
-                         dis.skipBytes(len);//pular se registro tiver sido excluido
-                    }
-                    
-               }     
 
+                    //pular se registro tiver sido excluido
+                    else{
+                         dis.skipBytes(len);
+                    } 
+               } 
+               dis.close();
           } catch(Exception e)
           {
                System.out.println(e.getMessage());
           } 
-
-          return f_temp;
+          return null; //retornar nulo se não encotrar id
      }
+
      public static void main(String[] args) {
           
           String csv = "imdb_movies.csv";
           String linha;
           Filme filme = new Filme();
-          Filme f = new Filme();
-          f.name = "Avatar: The Way of Water";
-
 
           FileOutputStream arq;
           DataOutputStream dos; 
@@ -106,9 +108,6 @@ public class Main {
             dos.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        System.out.println(ler(f));
-       
+        }  
      }
 }
