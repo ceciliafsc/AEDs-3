@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 public class Main {
 
-     public static Filme ler(Filme f){
+     public static boolean read(int id){
 
           FileInputStream arq;
           DataInputStream dis; 
@@ -16,7 +16,7 @@ public class Main {
            try{
                arq =  new FileInputStream("filmes.db");
                dis = new DataInputStream(arq);
-               
+
                while (dis.available() > 0) { //ler ate eof
 
                     byte lapide = dis.readByte();
@@ -27,8 +27,8 @@ public class Main {
                          ba = new byte[len];
                          dis.read(ba);                        
                          f_temp.fromByteArray(ba); 
-                         if (f_temp.id == f.id) {
-                              return f_temp;
+                         if (f_temp.id == id) {
+                              return true;
                          }
                     }
 
@@ -42,12 +42,40 @@ public class Main {
           {
                System.out.println(e.getMessage());
           } 
-          return null; //retornar nulo se não encotrar id
+          return false; //retornar nulo se não encotrar id
      }
 
      public static boolean remover(int id){    
 
-          
+          try {
+               RandomAccessFile arq = new RandomAccessFile("filmes.db", "rw");
+               arq.seek(0);
+               
+               while (arq.getFilePointer() < arq.length()) {
+                    byte lapide = arq.readByte();
+                    long pos = arq.getFilePointer();//salvar pos do ponteiro
+                    int len = arq.readInt();
+
+                    if(lapide != 1){
+                         byte[] ba = new byte[len];
+                         arq.readFully(ba);
+                         Filme f_temp = new Filme();
+                         f_temp.fromByteArray(ba);
+
+                         if (f_temp.id == id) {
+                              arq.seek(pos-1);//mover ponteiro para a lapide
+                              arq.writeByte(1);
+                              return true;
+                         }
+                    }
+                    //pular registro se tiver sido excluido
+                    else{
+                         arq.skipBytes(len);
+                    }
+               }
+          } catch (IOException e) {
+            e.printStackTrace();
+          }        
           return false;
      }
 
@@ -61,7 +89,6 @@ public class Main {
           DataOutputStream dos; 
 
           byte[] ba;
-          
      
           SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy");
 
